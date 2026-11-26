@@ -7,6 +7,7 @@
   <meta name="description" content="Fixed-scope, fixed-price Minecraft plugin development, server configuration, technical services, custom Discord bots, and Discord server builds.">
   <link rel="icon" type="image/webp" href="icon.webp">
   <style>
+    /* PwnCraft Studio site styles — responsive polish pass, Nov 25 2026 */
     :root {
       --charcoal: #232326;
       --charcoal-2: #2b2b30;
@@ -29,10 +30,14 @@
       background: var(--charcoal-3);
       color: var(--paper);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.6;
+      font-size: 16px;
+      line-height: 1.5;
+      overflow-x: clip;
     }
 
     a { color: inherit; }
+
+    img { max-width: 100%; height: auto; }
 
     .site-header {
       position: sticky;
@@ -78,14 +83,17 @@
       align-items: center;
       gap: 26px;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 1rem;
     }
 
     nav a { text-decoration: none; }
     nav a:hover { color: var(--paper); }
 
     .nav-cta {
-      padding: 9px 15px;
+      display: inline-flex;
+      align-items: center;
+      min-height: 48px;
+      padding: 10px 18px;
       border: 1px solid rgba(242, 179, 61, 0.55);
       border-radius: 999px;
       color: var(--gold) !important;
@@ -119,15 +127,15 @@
     }
 
     h1, h2, h3 { line-height: 1.12; letter-spacing: -0.035em; }
-    h1 { margin: 0; font-size: clamp(3rem, 8vw, 6.2rem); }
+    h1 { margin: 0; font-size: clamp(2.5rem, 10vw, 6.2rem); }
     h1 span { color: var(--gold); }
-    h2 { margin: 0 0 16px; font-size: clamp(2rem, 4vw, 3.2rem); }
-    h3 { margin: 0 0 10px; font-size: 1.35rem; }
+    h2 { margin: 0 0 16px; font-size: clamp(1.8rem, 5.5vw, 3.2rem); }
+    h3 { margin: 0 0 10px; font-size: clamp(1.15rem, 4.5vw, 1.35rem); }
 
     .tagline {
       margin: 18px 0 0;
       color: var(--paper);
-      font-size: clamp(1.25rem, 2.4vw, 1.7rem);
+      font-size: clamp(1.15rem, 2.4vw, 1.7rem);
       font-weight: 650;
     }
 
@@ -149,8 +157,11 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 50px;
-      padding: 12px 20px;
+      min-height: 48px;
+      padding: 12px 22px;
+      font-size: 1rem;
+      line-height: 1.25;
+      text-align: center;
       border-radius: 999px;
       text-decoration: none;
       font-weight: 800;
@@ -181,7 +192,7 @@
     .hero-card p {
       margin: 16px 4px 4px;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 1rem;
     }
 
     .trust-strip {
@@ -207,7 +218,7 @@
       color: var(--paper);
     }
 
-    .trust-item span { color: var(--muted); font-size: 0.94rem; }
+    .trust-item span { color: var(--muted); font-size: 1rem; }
 
     section { padding: 82px 0; }
     section.alt { background: var(--charcoal); border-block: 1px solid var(--line); }
@@ -310,7 +321,7 @@
     }
 
     .step h3 { font-size: 1.08rem; }
-    .step p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+    .step p { margin: 0; color: var(--muted); font-size: 1rem; }
 
     .work-card .result {
       margin-top: 20px;
@@ -366,15 +377,24 @@
       .contact-panel .button { justify-self: start; }
     }
 
-    @media (max-width: 640px) {
-      .header-inner { min-height: 64px; }
+    @media (max-width: 720px) {
+      .header-inner { min-height: 64px; gap: 12px; }
+      .nav-cta { padding: 10px 16px; }
       nav a:not(.nav-cta) { display: none; }
       .hero-grid { padding: 58px 0; gap: 34px; }
       section { padding: 62px 0; }
       .services-grid, .work-grid, .steps { grid-template-columns: 1fr; }
       .trust-grid { grid-template-columns: 1fr; }
+      .step { min-height: 0; }
       .card, .contact-panel { padding: 24px; }
       .price-list li { align-items: flex-start; flex-direction: column; gap: 2px; }
+      .hero-actions .button, .links-row .button { flex: 1 1 100%; width: 100%; }
+      .contact-panel .button { justify-self: stretch; }
+    }
+
+    @media (max-width: 480px) {
+      .brand span { display: none; }
+      .hero-actions { margin-top: 26px; }
     }
   </style>
 </head>
