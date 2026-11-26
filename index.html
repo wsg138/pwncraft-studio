@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PwnCraft Studio — Plugins, configs &amp; networks, built right</title>
+  <meta name="description" content="Fixed-scope, fixed-price Minecraft plugin development, server configuration, technical services, custom Discord bots, and Discord server builds.">
+  <link rel="icon" type="image/webp" href="icon.webp">
+  <style>
+    :root {
+      --charcoal: #232326;
+      --charcoal-2: #2b2b30;
+      --charcoal-3: #19191c;
+      --red: #c8102e;
+      --red-dark: #9d0c24;
+      --gold: #f2b33d;
+      --paper: #f5f1e8;
+      --muted: #c9c3b8;
+      --line: rgba(245, 241, 232, 0.14);
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--charcoal-3);
+      color: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(25, 25, 28, 0.94);
+      backdrop-filter: blur(14px);
+    }
+
+    .header-inner,
+    .wrap {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .header-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    nav a { text-decoration: none; }
+    nav a:hover { color: var(--paper); }
+
+    .nav-cta {
+      padding: 9px 15px;
+      border: 1px solid rgba(242, 179, 61, 0.55);
+      border-radius: 999px;
+      color: var(--gold) !important;
+      font-weight: 700;
+    }
+
+    .hero {
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 82% 8%, rgba(200, 16, 46, 0.34), transparent 32rem),
+        radial-gradient(circle at 8% 30%, rgba(242, 179, 61, 0.13), transparent 26rem),
+        linear-gradient(145deg, #29292e 0%, var(--charcoal) 48%, #17171a 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+      gap: 52px;
+      align-items: center;
+      padding: 84px 0 76px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.12; letter-spacing: -0.035em; }
+    h1 { margin: 0; font-size: clamp(3rem, 8vw, 6.2rem); }
+    h1 span { color: var(--gold); }
+    h2 { margin: 0 0 16px; font-size: clamp(2rem, 4vw, 3.2rem); }
+    h3 { margin: 0 0 10px; font-size: 1.35rem; }
+
+    .tagline {
+      margin: 18px 0 0;
+      color: var(--paper);
+      font-size: clamp(1.25rem, 2.4vw, 1.7rem);
+      font-weight: 650;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 800;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { background: var(--red); color: white; box-shadow: 0 12px 28px rgba(200, 16, 46, 0.28); }
+    .button-primary:hover { background: var(--red-dark); }
+    .button-secondary { border: 1px solid var(--line); background: rgba(245, 241, 232, 0.05); }
+
+    .hero-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(245, 241, 232, 0.055);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 20px;
+    }
+
+    .hero-card p {
+      margin: 16px 4px 4px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .trust-strip {
+      border-bottom: 1px solid var(--line);
+      background: #202024;
+    }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--line);
+    }
+
+    .trust-item {
+      padding: 22px;
+      background: #202024;
+    }
+
+    .trust-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--paper);
+    }
+
+    .trust-item span { color: var(--muted); font-size: 0.94rem; }
+
+    section { padding: 82px 0; }
+    section.alt { background: var(--charcoal); border-block: 1px solid var(--line); }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 34px;
+    }
+
+    .section-head p { margin: 0; color: var(--muted); font-size: 1.03rem; }
+
+    .services-grid,
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      height: 100%;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--charcoal-2);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+    }
+
+    .card p { color: var(--muted); }
+    .card p:first-of-type { margin-top: 0; }
+
+    .service-kicker {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(200, 16, 46, 0.16);
+      color: #ff8296;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .price-list {
+      display: grid;
+      gap: 0;
+      margin: 22px 0 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid var(--line);
+    }
+
+    .price-list li {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .price-list li:last-child { border-bottom: 0; }
+    .price-list span { color: var(--muted); }
+    .price { color: var(--gold); font-weight: 850; white-space: nowrap; }
+
+    .detail-list {
+      margin: 18px 0 0;
+      padding-left: 1.2rem;
+      color: var(--muted);
+    }
+
+    .detail-list li + li { margin-top: 7px; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      counter-reset: steps;
+    }
+
+    .step {
+      position: relative;
+      min-height: 190px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--charcoal-3);
+    }
+
+    .step-number {
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-bottom: 18px;
+      border-radius: 50%;
+      background: var(--red);
+      color: white;
+      font-weight: 900;
+    }
+
+    .step h3 { font-size: 1.08rem; }
+    .step p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+    .work-card .result {
+      margin-top: 20px;
+      padding: 16px;
+      border-left: 4px solid var(--gold);
+      border-radius: 0 14px 14px 0;
+      background: rgba(242, 179, 61, 0.08);
+      color: var(--paper);
+    }
+
+    .links-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .contact-panel {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 34px;
+      align-items: center;
+      padding: 36px;
+      border: 1px solid rgba(242, 179, 61, 0.32);
+      border-radius: 26px;
+      background: linear-gradient(135deg, rgba(200, 16, 46, 0.2), rgba(242, 179, 61, 0.08)), var(--charcoal-2);
+    }
+
+    .contact-panel p { color: var(--muted); }
+    .contact-panel .button { justify-self: end; }
+
+    footer {
+      padding: 34px 0 44px;
+      border-top: 1px solid var(--line);
+      background: #17171a;
+      color: var(--muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    footer a { color: var(--paper); }
+
+    @media (max-width: 900px) {
+      .hero-grid, .contact-panel { grid-template-columns: 1fr; }
+      .hero-card { max-width: 420px; }
+      .trust-grid { grid-template-columns: repeat(2, 1fr); }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .contact-panel .button { justify-self: start; }
+    }
+
+    @media (max-width: 640px) {
+      .header-inner { min-height: 64px; }
+      nav a:not(.nav-cta) { display: none; }
+      .hero-grid { padding: 58px 0; gap: 34px; }
+      section { padding: 62px 0; }
+      .services-grid, .work-grid, .steps { grid-template-columns: 1fr; }
+      .trust-grid { grid-template-columns: 1fr; }
+      .card, .contact-panel { padding: 24px; }
+      .price-list li { align-items: flex-start; flex-direction: column; gap: 2px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="PwnCraft Studio home">
+        <img src="icon.webp" alt="PwnCraft Studio logo">
+        <span>PwnCraft Studio</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="#services">Services</a>
+        <a href="#process">How it works</a>
+        <a href="#past-work">Past work</a>
+        <a class="nav-cta" href="https://discord.gg/qKn3U2qqd8" target="_blank" rel="noopener">Order on Discord</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow">Custom development &amp; technical services</p>
+          <h1>PwnCraft <span>Studio</span></h1>
+          <p class="tagline">Plugins, configs &amp; networks — built right.</p>
+          <p class="lead">I offer fixed-scope, fixed-price services for Minecraft server owners and online communities. Every service I sell has a public price, a written scope I confirm with you before payment, and an agreed delivery date.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://discord.gg/qKn3U2qqd8" target="_blank" rel="noopener">Order on Discord</a>
+            <a class="button button-secondary" href="#services">View services &amp; prices</a>
+          </div>
+        </div>
+        <aside class="hero-card" aria-label="PwnCraft Studio brand mark">
+          <img src="icon.webp" alt="Red voxel cube with a gold star and crossed gold pickaxes on charcoal">
+          <p>Clear scope. Public pricing. Written confirmation before I request payment.</p>
+        </aside>
+      </div>
+    </div>
+
+    <div class="trust-strip" aria-label="Service commitments">
+      <div class="wrap trust-grid">
+        <div class="trust-item"><strong>Public prices</strong><span>Fixed tiers are listed before you contact me.</span></div>
+        <div class="trust-item"><strong>Written scope</strong><span>I confirm the deliverable, price, and date in writing.</span></div>
+        <div class="trust-item"><strong>One revision round</strong><span>Every order includes one round inside the agreed scope.</span></div>
+        <div class="trust-item"><strong>30-day defect window</strong><span>I correct in-scope defects at no charge for 30 days.</span></div>
+      </div>
+    </div>
+
+    <section id="services">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Services &amp; pricing</p>
+          <h2>Choose the work you need</h2>
+          <p>I keep each order bounded and specific. If a request grows beyond its tier, I give you a revised quote before I do any extra work.</p>
+        </div>
+
+        <div class="services-grid">
+          <article class="card">
+            <span class="service-kicker">Minecraft plugins</span>
+            <h3>Bug Fixes</h3>
+            <p>I fix bugs in existing Minecraft plugins on Paper and Spigot servers. You provide the plugin or source code, your server version, and clear reproduction steps.</p>
+            <ul class="price-list">
+              <li><span>Simple bug fix</span><strong class="price">$10</strong></li>
+              <li><span>Complex bug fix</span><strong class="price">Quoted</strong></li>
+            </ul>
+            <p>For a complex fault, I assess the problem free of charge in your ticket and give you a fixed quote before I start.</p>
+          </article>
+
+          <article class="card">
+            <span class="service-kicker">Development</span>
+            <h3>Custom Plugins</h3>
+            <p>I develop custom plugins for Paper and Spigot servers, from one focused feature to a larger database-backed utility or network component.</p>
+            <ul class="price-list">
+              <li><span>Single feature</span><strong class="price">$25</strong></li>
+              <li><span>Standard plugin</span><strong class="price">$75</strong></li>
+              <li><span>Advanced utility</span><strong class="price">$100</strong></li>
+              <li><span>Larger projects</span><strong class="price">Quoted</strong></li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <span class="service-kicker">Automation</span>
+            <h3>Custom Discord Bots</h3>
+            <p>I build custom Discord bots and deliver them as source code with a setup guide. Each bot runs under your own Discord application, so you keep full ownership.</p>
+            <ul class="price-list">
+              <li><span>Starter bot</span><strong class="price">$30</strong></li>
+              <li><span>Standard bot</span><strong class="price">$75</strong></li>
+              <li><span>Advanced bot</span><strong class="price">$120</strong></li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <span class="service-kicker">Server setup</span>
+            <h3>Configuration</h3>
+            <p>I configure the Minecraft plugins you already run — menus, kits, crates, permissions, shops, and related files — with consistent cross-plugin references.</p>
+            <ul class="price-list">
+              <li><span>Single plugin</span><strong class="price">$15</strong></li>
+              <li><span>Multi-plugin, up to 15 plugins</span><strong class="price">$45</strong></li>
+              <li><span>Full server setup</span><strong class="price">Quoted</strong></li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <span class="service-kicker">Performance &amp; repair</span>
+            <h3>Technical Services</h3>
+            <p>I diagnose and repair Minecraft servers, including networks using a Velocity or BungeeCord proxy. My deep diagnostic covers:</p>
+            <ul class="detail-list">
+              <li>Full spark and timings profiling</li>
+              <li>TPS and MSPT analysis, including lag spikes</li>
+              <li>A per-plugin performance breakdown</li>
+              <li>Heap and thread review</li>
+              <li>Startup and configuration audits</li>
+              <li>Proxy and network checks where applicable</li>
+              <li>A written report with findings in priority order</li>
+            </ul>
+            <ul class="price-list">
+              <li><span>Deep server diagnostic</span><strong class="price">$49</strong></li>
+              <li><span>Repair and optimization</span><strong class="price">$75</strong></li>
+              <li><span>Server migration</span><strong class="price">$149</strong></li>
+              <li><span>Network troubleshooting</span><strong class="price">$199</strong></li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <span class="service-kicker">Community setup</span>
+            <h3>Discord Server Builds</h3>
+            <p>I build structure, roles, permissions, and onboarding for Discord servers. You keep full ownership because I build under your account.</p>
+            <ul class="price-list">
+              <li><span>Blueprint</span><strong class="price">$10</strong></li>
+              <li><span>Complete build</span><strong class="price">$75</strong></li>
+              <li><span>Build with utility bot</span><strong class="price">$120</strong></li>
+            </ul>
+            <p>The Blueprint is a complete plan and design document delivered in 1–2 days. It does not include building the server.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="alt" id="process">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">How it works</p>
+          <h2>A clear process before any payment</h2>
+          <p>I handle orders through a private Discord ticket so the scope, files, updates, and delivery stay in one place.</p>
+        </div>
+        <div class="steps">
+          <article class="step"><span class="step-number">1</span><h3>Open a ticket</h3><p>Join my Discord and tell me what you need.</p></article>
+          <article class="step"><span class="step-number">2</span><h3>Confirm the scope</h3><p>I send the deliverable, fixed price, delivery date, and acceptance criteria in writing.</p></article>
+          <article class="step"><span class="step-number">3</span><h3>Pay securely</h3><p>I send a payment link or an invoice for the confirmed amount.</p></article>
+          <article class="step"><span class="step-number">4</span><h3>I start the work</h3><p>Work begins once I confirm your payment.</p></article>
+          <article class="step"><span class="step-number">5</span><h3>Receive delivery</h3><p>I deliver in your ticket, with one revision round and a 30-day defect window.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="past-work">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Past work</p>
+          <h2>Experience I bring to every order</h2>
+          <p>I founded and ran Enthusia, a long-running Minecraft network. I built its plugins, handled its configuration, and ran its network operations before I started taking client work.</p>
+        </div>
+
+        <div class="work-grid">
+          <article class="card work-card">
+            <h3>Multi-server network operations</h3>
+            <p>I ran day-to-day operations, controlled deployments, performance and world management, permissions, and donor-rank plumbing on a live multi-server network.</p>
+            <div class="result"><strong>Results:</strong> I kept the network live through updates and events, used tested backups, set a deliberate ±105k world border, pre-generated the world inside it, and kept paid ranks separate from gameplay power.</div>
+          </article>
+
+          <article class="card work-card">
+            <h3>370-check plugin QA pass</h3>
+            <p>I built and ran a full adversarial test matrix for a custom staff-administration plugin, covering permission tiers, state transitions, logging, restarts, transfers, and interrupted actions.</p>
+            <div class="result"><strong>Results:</strong> I documented 34 findings with reproduction steps and severity, including a staff-mode lockout defect I caught in testing before it reached players.</div>
+          </article>
+
+          <article class="card work-card">
+            <h3>Custom feature plugin shipped to production</h3>
+            <p>I built and configured a frontier plugin for a production server, chose its border from measured pre-generation and storage costs, and rejected a risky inhabited-time trim proposal.</p>
+            <div class="result"><strong>Results:</strong> I shipped the feature on schedule with the border live, the world pre-generated, a full backup behind the deployment, and a documented expansion path.</div>
+          </article>
+
+          <article class="card work-card">
+            <h3>See the work</h3>
+            <p>You can visit the Enthusia Discord or browse my public code and project history on GitHub.</p>
+            <div class="links-row">
+              <a class="button button-secondary" href="https://discord.gg/5ccgDCmNSc" target="_blank" rel="noopener">Enthusia Discord</a>
+              <a class="button button-secondary" href="https://github.com/wsg138" target="_blank" rel="noopener">GitHub — wsg138</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="alt" id="contact">
+      <div class="wrap">
+        <div class="contact-panel">
+          <div>
+            <p class="eyebrow">Start an order</p>
+            <h2>Tell me what you need built or fixed</h2>
+            <p>Open a ticket in my Discord and answer the intake questions for the service. I will confirm the scope and price in writing before I send a payment link or invoice.</p>
+          </div>
+          <a class="button button-primary" href="https://discord.gg/qKn3U2qqd8" target="_blank" rel="noopener">Order on Discord</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span><strong>PwnCraft Studio</strong> — Plugins, configs &amp; networks, built right.</span>
+      <span>Contact: <a href="https://discord.gg/qKn3U2qqd8" target="_blank" rel="noopener">Discord</a></span>
+      <span>All services delivered digitally. No physical goods are sold.</span>
+    </div>
+  </footer>
+</body>
+</html>
