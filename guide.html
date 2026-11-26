@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Minecraft Server Lag Checklist — PwnCraft Studio</title>
+  <meta name="description" content="A free self-diagnostic guide for Minecraft server owners: measure TPS and MSPT with spark, apply the settings that actually matter, and find the real cause of lag.">
+  <link rel="icon" type="image/webp" href="icon.webp">
+  <style>
+    /* PwnCraft Studio site styles — shared with index.html, Nov 25 2026 */
+    :root {
+      --charcoal: #232326;
+      --charcoal-2: #2b2b30;
+      --charcoal-3: #19191c;
+      --red: #c8102e;
+      --red-dark: #9d0c24;
+      --gold: #f2b33d;
+      --paper: #f5f1e8;
+      --muted: #c9c3b8;
+      --line: rgba(245, 241, 232, 0.14);
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--charcoal-3);
+      color: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      overflow-x: clip;
+    }
+
+    a { color: inherit; }
+
+    img { max-width: 100%; height: auto; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(25, 25, 28, 0.94);
+      backdrop-filter: blur(14px);
+    }
+
+    .header-inner,
+    .wrap {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .header-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    nav a { text-decoration: none; }
+    nav a:hover { color: var(--paper); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      min-height: 48px;
+      padding: 10px 18px;
+      border: 1px solid rgba(242, 179, 61, 0.55);
+      border-radius: 999px;
+      color: var(--gold) !important;
+      font-weight: 700;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.12; letter-spacing: -0.035em; }
+    h1 { margin: 0; font-size: clamp(2.5rem, 10vw, 6.2rem); }
+    h1 span { color: var(--gold); }
+    h2 { margin: 0 0 16px; font-size: clamp(1.8rem, 5.5vw, 3.2rem); }
+    h3 { margin: 0 0 10px; font-size: clamp(1.15rem, 4.5vw, 1.35rem); }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 22px;
+      font-size: 1rem;
+      line-height: 1.25;
+      text-align: center;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 800;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { background: var(--red); color: white; box-shadow: 0 12px 28px rgba(200, 16, 46, 0.28); }
+    .button-primary:hover { background: var(--red-dark); }
+    .button-secondary { border: 1px solid var(--line); background: rgba(245, 241, 232, 0.05); }
+
+    section { padding: 82px 0; }
+    section.alt { background: var(--charcoal); border-block: 1px solid var(--line); }
+
+    .contact-panel {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 34px;
+      align-items: center;
+      padding: 36px;
+      border: 1px solid rgba(242, 179, 61, 0.32);
+      border-radius: 26px;
+      background: linear-gradient(135deg, rgba(200, 16, 46, 0.2), rgba(242, 179, 61, 0.08)), var(--charcoal-2);
+    }
+
+    .contact-panel p { color: var(--muted); }
+    .contact-panel .button { justify-self: end; }
+
+    footer {
+      padding: 34px 0 44px;
+      border-top: 1px solid var(--line);
+      background: #17171a;
+      color: var(--muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    footer a { color: var(--paper); }
+
+    /* Guide-specific styles */
+    .guide-hero {
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 82% 8%, rgba(200, 16, 46, 0.34), transparent 32rem),
+        radial-gradient(circle at 8% 30%, rgba(242, 179, 61, 0.13), transparent 26rem),
+        linear-gradient(145deg, #29292e 0%, var(--charcoal) 48%, #17171a 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .guide-hero-inner { padding: 72px 0 64px; max-width: 860px; }
+    .guide-hero h1 { font-size: clamp(2.3rem, 7vw, 4.4rem); }
+
+    .guide-meta {
+      margin: 20px 0 0;
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .guide-lead {
+      max-width: 760px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .article {
+      width: min(860px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 64px 0 8px;
+    }
+
+    .article h2 { margin-top: 56px; }
+    .article h2:first-child { margin-top: 0; }
+    .article h3 { margin-top: 34px; color: var(--paper); }
+    .article p { color: var(--muted); margin: 0 0 16px; }
+    .article p strong, .article li strong { color: var(--paper); }
+    .article ul, .article ol { color: var(--muted); padding-left: 1.3rem; margin: 0 0 16px; }
+    .article li + li { margin-top: 7px; }
+    .article a { color: var(--gold); }
+
+    code {
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(245, 241, 232, 0.08);
+      border: 1px solid var(--line);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+      color: var(--paper);
+      overflow-wrap: break-word;
+    }
+
+    pre {
+      margin: 0 0 16px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--charcoal-3);
+      overflow-x: auto;
+    }
+
+    pre code {
+      padding: 0;
+      border: 0;
+      background: none;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .checklist li {
+      position: relative;
+      margin: 0;
+      padding: 18px 20px 18px 52px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--charcoal-2);
+      color: var(--muted);
+    }
+
+    .checklist li + li { margin-top: 0; }
+
+    .checklist li::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 22px;
+      width: 15px;
+      height: 15px;
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+    }
+
+    .checklist li strong { display: block; margin-bottom: 3px; }
+
+    .callout {
+      margin: 0 0 20px;
+      padding: 18px 20px;
+      border-left: 4px solid var(--gold);
+      border-radius: 0 14px 14px 0;
+      background: rgba(242, 179, 61, 0.08);
+      color: var(--paper);
+    }
+
+    .callout p { color: var(--paper); margin: 0; }
+    .callout p + p { margin-top: 8px; }
+
+    .guide-cta { padding: 64px 0 82px; }
+
+    @media (max-width: 900px) {
+      .contact-panel { grid-template-columns: 1fr; }
+      .contact-panel .button { justify-self: start; }
+    }
+
+    @media (max-width: 720px) {
+      .header-inner { min-height: 64px; gap: 12px; }
+      .nav-cta { padding: 10px 16px; }
+      nav a:not(.nav-cta) { display: none; }
+      section { padding: 62px 0; }
+      .guide-hero-inner { padding: 54px 0 48px; }
+      .article { padding-top: 48px; }
+      .contact-panel { padding: 24px; }
+      .contact-panel .button { justify-self: stretch; }
+      .checklist li { padding: 16px 16px 16px 46px; }
+      .checklist li::before { left: 16px; top: 19px; }
+    }
+
+    @media (max-width: 480px) {
+      .brand span { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="PwnCraft Studio home">
+        <img src="icon.webp" alt="PwnCraft Studio logo">
+        <span>PwnCraft Studio</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="index.html#services">Services</a>
+        <a href="index.html#process">How it works</a>
+        <a href="index.html#past-work">Past work</a>
+        <a class="nav-cta" href="https://discord.gg/qKn3U2qqd8" target="_blank" rel="noopener">Order on Discord</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="guide-hero">
+      <div class="wrap guide-hero-inner">
+        <p class="eyebrow">Free guide</p>
+        <h1>The Minecraft Server <span>Lag Checklist</span></h1>
+        <p class="guide-meta">A self-diagnostic guide &middot; About 15 minutes &middot; For Paper &amp; Purpur 1.21 servers</p>
+        <p class="guide-lead">I wrote this checklist because most lag advice on the internet starts with changing settings, and that is the wrong order. This guide starts with measuring, so you can see what your server is actually doing. Then it walks through the settings that genuinely move the needle, shows you how to find the real cause when the settings are not the problem, and is honest about where a checklist stops being enough.</p>
+        <p class="guide-lead">You need console or OP access to your server and about fifteen minutes while players are online. Work through it in order — each section depends on the one before it.</p>
+      </div>
+    </div>
+
+    <div class="article">
+      <h2>1. Measure first</h2>
+      <p>Every Minecraft server tick has a budget of <strong>50 milliseconds</strong>. The server runs 20 ticks per second (TPS), and each tick — entities, redstone, chunks, plugins, everything — has to finish inside that 50&nbsp;ms budget. When a tick takes longer, TPS falls, and players feel it as block lag, rubber-banding, and delayed hits.</p>
+      <p>Two numbers describe your server's health:</p>
+      <ul>
+        <li><strong>TPS</strong> — ticks per second. 20 is perfect. Paper's <code>/tps</code> command shows the average over the last 1, 5, and 15 minutes. The catch: it is an average, so a server can report 19 TPS while still freezing for a second at a time.</li>
+        <li><strong>MSPT</strong> — milliseconds per tick. This is the number that matters. Paper's <code>/mspt</code> command shows the average, minimum, and maximum tick time over recent windows. If MSPT sits above 50, TPS <em>cannot</em> hold at 20, no matter what the average TPS says.</li>
+      </ul>
+      <div class="callout">
+        <p><strong>Healthy looks like this:</strong> TPS at 19.5–20, average MSPT comfortably under 50 (roughly 20–35&nbsp;ms leaves real headroom), and the 95th-percentile MSPT — the tick time your worst regular spikes reach — still under 50&nbsp;ms. If your average is fine but the percentile is over budget, you have a spike problem, not a load problem, and the fix is different.</p>
+      </div>
+      <h3>Install spark and take three readings</h3>
+      <p>The tool I use for all of this is <strong>spark</strong>, a free performance profiler by lucko. Install it as a plugin, restart, and run these three commands while your server is at its normal player count:</p>
+      <pre><code>/spark health
+/spark tickmonitor
+/spark profiler start</code></pre>
+      <ul>
+        <li><code>/spark health</code> generates a report with TPS, MSPT including percentiles, memory use, and CPU load. This is your baseline — save the link.</li>
+        <li><code>/spark tickmonitor</code> prints a line in chat every time a tick exceeds the 50&nbsp;ms budget, so you can watch spikes happen live and note what players were doing at that moment.</li>
+        <li><code>/spark profiler start</code> begins sampling what the server spends its time on. Let it run through a laggy period — at least a few minutes — then run <code>/spark profiler stop</code> and open the viewer link it gives you. Section 3 covers how to read it.</li>
+      </ul>
+      <p>Do not change a single setting before you have these readings. If you change five things and the lag improves, you will never know which one mattered — and if it gets worse, you will not know which one to revert.</p>
+
+      <h2>2. The quick wins checklist</h2>
+      <p>These are the settings I check first on any Paper or Purpur server. Each one lists the file it lives in. Change one or two at a time, restart, and compare against your baseline from Section 1. Keep a note of what you changed — future you will be grateful.</p>
+      <ul class="checklist">
+        <li><strong>Lower simulation-distance before view-distance</strong>
+          In <code>server.properties</code> (or per-world in <code>paper-world-defaults.yml</code>). View-distance controls how many chunks are <em>sent</em> to each player; simulation-distance controls how many chunks actually <em>tick</em> — entities, redstone, crops, spawners. Simulation is what costs CPU. For a survival server, simulation-distance of 4–6 with a view-distance of 8–10 gives players the view they want at a fraction of the tick cost.</li>
+        <li><strong>Turn on per-player mob spawning</strong>
+          In <code>paper-world-defaults.yml</code>, under <code>entities.spawning</code>, set <code>per-player-mob-spawns: true</code> if it is not already. Without it, mob caps are shared across the whole server, so one player at a dark-room farm consumes the cap for everyone — and the server still pays to attempt spawns everywhere.</li>
+        <li><strong>Trim the spawn limits</strong>
+          In <code>bukkit.yml</code>, under <code>spawn-limits</code>. The defaults (70 monsters, 10 animals, 20 water-ambient, and more) are generous for a small server. Halving monster and ambient limits on a server that does not need them is free performance, and players rarely notice anything except fewer stray bats.</li>
+        <li><strong>Reduce entity activation ranges</strong>
+          In <code>spigot.yml</code>, under <code>entity-activation-range</code>. Entities outside these ranges tick at a reduced rate instead of fully. The defaults — 32 blocks for animals and monsters, 64 for raiders — can come down to roughly 24/24/48 on a survival server. Also confirm <code>tick-inactive-villagers: true</code> so villagers outside activation range tick cheaply; trading halls are a classic hidden cost.</li>
+        <li><strong>Stop hoppers from firing events nobody uses</strong>
+          In <code>paper-world-defaults.yml</code>, under <code>hopper</code>, set <code>disable-move-event: true</code> — unless a plugin you run depends on <code>InventoryMoveItemEvent</code>. Hopper chains are one of the most common tile-entity costs on survival servers, and most servers have no plugin listening to that event. While you are there, confirm <code>cooldown-when-full: true</code> so full hoppers stop polling every tick, and review the hopper transfer and check intervals under <code>ticks-per</code> in <code>spigot.yml</code>.</li>
+        <li><strong>Protect loaded chunks from sync loads</strong>
+          In <code>paper-world-defaults.yml</code>, under <code>chunks</code>, set <code>prevent-moving-into-unloaded-chunks: true</code>. This stops players from flying or riding into chunks that are not loaded yet, which otherwise forces the server to load them synchronously — a classic source of sharp MSPT spikes during exploration. Also check <code>entity-per-chunk-save-limit</code> in the same section: capping how many entities save per chunk prevents a single entity-stuffed chunk from stalling a world save.</li>
+        <li><strong>Use Paper's built-in anti-xray</strong>
+          In <code>paper-world-defaults.yml</code>, under <code>anticheat.anti-xray</code>, set <code>enabled: true</code>. Engine mode 1 hides ores that are completely surrounded by other blocks and is relatively light. Engine mode 2 also disguises exposed veins, which stops more xray methods but costs more CPU per chunk sent. If you currently run a separate anti-xray plugin doing the same job with its own chunk processing, replacing it with the built-in version usually removes duplicate work.</li>
+        <li><strong>Use Aikar's JVM flags, sized to your server</strong>
+          Your startup flags matter as much as your configs. Run Java 21 for Minecraft 1.21, use the G1GC flag set published by Aikar (aikar.co/flags), and set <code>-Xms</code> equal to <code>-Xmx</code> so the heap does not resize mid-game. Do not allocate every gigabyte your host has: the operating system needs memory for the page cache your world files are read through, and an oversized heap makes garbage-collection pauses longer, not shorter. For most servers, the heap you actually need is smaller than you think.</li>
+      </ul>
+      <p>Restart, let the server settle under a normal player load, and take the same three spark readings again. If MSPT dropped and the percentile came under 50&nbsp;ms, you are done — enjoy your server. If it barely moved, your problem is not in this list, and that is genuinely useful information.</p>
+
+      <h2>3. Finding the real cause</h2>
+      <p>Open the spark profiler report you captured in Section 1 — ideally one recorded <em>during</em> the lag, with players online. A profile of an empty server tells you what an empty server does, which is nothing.</p>
+      <h3>Read self time, not total time</h3>
+      <p>The profiler viewer shows a tree of everything the server did, with two percentages that beginners constantly mix up. <strong>Total time</strong> includes everything a method called underneath it, so the top of the tree always shows the server's main loop at nearly 100% — that tells you nothing. <strong>Self time</strong> is the time spent in that method's own code, and it is where the truth lives. Switch to the flat view, sort by self time, and the top entries are the actual work your server is spending its tick budget on.</p>
+      <p>Three patterns account for most of what I find:</p>
+      <ul>
+        <li><strong>Entity ticking dominates.</strong> The entity section of the tree swells, often concentrated in one world. Compare your worlds: a villager trading hall, an over-bred animal pen, or a mob farm with hundreds of entities waiting to be processed will show up as one world's entity tick dwarfing the others. The fix is in that world, not in your configs.</li>
+        <li><strong>Tile entities dominate.</strong> Hoppers, furnaces, and other block entities show up under block-entity ticking. Thousands of hoppers in sorting systems are the usual cause. The checklist item on hopper events helps, but a farm built around tens of thousands of tile entities is a design problem, not a settings problem.</li>
+        <li><strong>One plugin's package dominates.</strong> Plugin code appears in the tree under its own package name, so a single plugin eating 20% of every tick is easy to spot once you know to look at self time. Note the percentage before you touch anything — that number is how you prove the fix worked.</li>
+      </ul>
+      <h3>What timings can and cannot tell you</h3>
+      <p>If you are on an older setup you may also have a timings report. Timings can give you a rough per-plugin percentage of a tick, which is fine as a first glance. It cannot show you <em>what inside</em> the plugin is slow, it distorts badly once ticks are already over budget, and it has been deprecated in favour of spark on modern Paper. Treat a timings report as a hint, never as evidence.</p>
+      <div class="callout">
+        <p><strong>The discipline that makes this work:</strong> one change at a time, a profiler capture before and after, and the self-time percentage written down. Lag that "feels better" is not a measurement. Servers I work on get a baseline, a change, and a comparison — in that order, every time.</p>
+      </div>
+
+      <h2>4. When it is not a settings problem</h2>
+      <p>Sometimes the checklist changes nothing, the profiler shows no single fat plugin, and the server still spikes. That pattern usually means one of these:</p>
+      <ul>
+        <li><strong>A plugin is doing slow work on the main thread.</strong> Database queries, file reads and writes, and web requests must never run on the tick thread, but plenty of plugins do exactly that — saving player data to MySQL when someone logs out, or writing files during an autosave cycle. The signature is a regular MSPT spike at a fixed interval, or a spike whenever a specific command runs or a player joins. The profiler shows it as one plugin's method holding the thread while everything else waits.</li>
+        <li><strong>Your costs scale with players in a way settings cannot fix.</strong> Every additional player loads more chunks, ticks more entities, and fires more plugin events. A configuration that holds 20 TPS with five players may be mathematically incapable of holding it with twenty-five, no matter how it is tuned. At that point the honest options are reducing per-player cost (simulation distance, farm rules), splitting load across servers behind a proxy, or better hardware.</li>
+        <li><strong>The hardware is the ceiling.</strong> The main tick loop still depends heavily on single-thread CPU performance. Oversold shared hosting, where your "cores" are contended by every other customer on the machine, produces lag that no configuration can cure. If MSPT is high with almost nothing in the profiler, suspect the machine, not the server.</li>
+        <li><strong>It is the network, not the server.</strong> If TPS holds at 20 and MSPT is healthy while players still complain, stop tuning the server. Rubber-banding with a healthy tick rate points at bandwidth (a high view-distance multiplies the chunk data sent to every player), at the proxy if you run Velocity or BungeeCord, or at the connection between the player and the host. Server lag and network lag feel identical to a player and have completely different fixes.</li>
+      </ul>
+      <p>None of these are failures of the checklist. Ruling out settings, entities, and plugins — with measurements, not guesses — is most of the diagnostic work. What remains is the part that needs a deeper look at your specific server.</p>
+    </div>
+
+    <section class="guide-cta">
+      <div class="wrap">
+        <div class="contact-panel">
+          <div>
+            <p class="eyebrow">The full diagnostic</p>
+            <h2>What a Deep Server Diagnostic adds</h2>
+            <p>This checklist covers measurement and the settings that matter. My Deep Server Diagnostic goes further: a per-plugin performance breakdown measured on your live server, a heap and thread review for memory and garbage-collection problems, a startup and full configuration audit across every file — not just the famous ones — plus proxy and network checks where a proxy is in use. You get a written report with every finding in priority order and the fix for each one, so you can apply the fixes yourself or hand the report to anyone.</p>
+            <p><strong style="color: var(--gold);">Deep Server Diagnostic — $49.</strong> Open a ticket in my Discord and I will confirm the scope in writing before you pay anything.</p>
+          </div>
+          <div>
+            <a class="button button-primary" href="https://discord.gg/qKn3U2qqd8" target="_blank" rel="noopener">Order on Discord</a>
+            <p style="margin-top: 16px;"><a href="index.html#services">See all services &amp; prices</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span><strong>PwnCraft Studio</strong> — Plugins, configs &amp; networks, built right.</span>
+      <span>Contact: <a href="https://discord.gg/qKn3U2qqd8" target="_blank" rel="noopener">Discord</a></span>
+      <span>All services delivered digitally. No physical goods are sold.</span>
+    </div>
+  </footer>
+</body>
+</html>
